@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="uk">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Melofone — OLX Монітор</title>
+<title>Melofone — Монітор</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 :root {
@@ -24,6 +25,8 @@
   --ok:     #00e6b4;
   --ok-bg:  rgba(0,230,180,.12);
   --purple: #a78bfa;
+  --tg:     #29b6f6;
+  --tg-bg:  rgba(41,182,246,.12);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{width:100%;min-height:100%;font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);}
@@ -34,7 +37,7 @@ html,body{width:100%;min-height:100%;font-family:'Sora',sans-serif;background:va
 .page{max-width:1500px;margin:0 auto;padding:28px 24px;}
 
 /* HEADER */
-.header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--b2);}
+.header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--b2);}
 .header-left .logo{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--teal);font-weight:600;margin-bottom:6px;}
 h1{font-size:26px;font-weight:800;color:#fff;text-shadow:0 0 20px rgba(0,230,180,.3);}
 .subtitle{color:var(--muted);font-size:13px;margin-top:4px;font-weight:300;}
@@ -43,23 +46,40 @@ h1{font-size:26px;font-weight:800;color:#fff;text-shadow:0 0 20px rgba(0,230,180
 .btn:hover{background:var(--teal);color:#000;}
 .btn-secondary{border-color:var(--blue);color:var(--blue);box-shadow:0 0 12px rgba(59,130,246,.1);}
 .btn-secondary:hover{background:var(--blue);color:#fff;}
+.btn-tg{border-color:var(--tg);color:var(--tg);box-shadow:0 0 12px rgba(41,182,246,.1);}
+.btn-tg:hover{background:var(--tg);color:#000;}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--b2);padding-bottom:0;}
+.tab{padding:10px 22px;cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;transition:all .2s;margin-bottom:-1px;border-radius:8px 8px 0 0;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--teal);border-bottom-color:var(--teal);background:rgba(0,230,180,.04);}
+.tab.tg-tab.active{color:var(--tg);border-bottom-color:var(--tg);background:rgba(41,182,246,.04);}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
 
 /* CONFIG */
 .config-panel{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:20px;}
 .config-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--teal);font-weight:600;margin-bottom:14px;}
 .config-grid{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end;}
+.config-grid-tg{display:grid;grid-template-columns:1fr 1fr 120px auto;gap:12px;align-items:end;}
 .field label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px;letter-spacing:.5px;}
 input,select{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:10px;background:var(--bg2);color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border-color .2s;}
 input:focus,select:focus{border-color:var(--teal);box-shadow:0 0 10px rgba(0,230,180,.15);}
 
 /* STAT CARDS */
 .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.cards-tg{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
 .card{background:var(--card);border:1px solid var(--b2);border-radius:14px;padding:20px;position:relative;overflow:hidden;transition:border-color .2s;}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:14px 14px 0 0;}
 .card:nth-child(1)::before{background:linear-gradient(90deg,#00e6b4,#3b82f6);}
 .card:nth-child(2)::before{background:linear-gradient(90deg,#3b82f6,#a78bfa);}
 .card:nth-child(3)::before{background:linear-gradient(90deg,#f59e0b,#f87171);}
 .card:nth-child(4)::before{background:linear-gradient(90deg,#f87171,#f59e0b);}
+.cards-tg .card:nth-child(1)::before{background:linear-gradient(90deg,#29b6f6,#3b82f6);}
+.cards-tg .card:nth-child(2)::before{background:linear-gradient(90deg,#3b82f6,#00e6b4);}
+.cards-tg .card:nth-child(3)::before{background:linear-gradient(90deg,#a78bfa,#f59e0b);}
+.cards-tg .card:nth-child(4)::before{background:linear-gradient(90deg,#00e6b4,#29b6f6);}
 .card:hover{border-color:var(--border);}
 .card-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:600;margin-bottom:8px;}
 .card-val{font-size:34px;font-weight:800;}
@@ -67,18 +87,21 @@ input:focus,select:focus{border-color:var(--teal);box-shadow:0 0 10px rgba(0,230
 .c2{color:#3b82f6;text-shadow:0 0 16px rgba(59,130,246,.4);}
 .c3{color:#f59e0b;text-shadow:0 0 16px rgba(245,158,11,.4);}
 .c4{color:#f87171;text-shadow:0 0 16px rgba(248,113,113,.4);}
+.c5{color:#29b6f6;text-shadow:0 0 16px rgba(41,182,246,.5);}
 
 /* PANELS */
 .panels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
 .panel{background:var(--card);border:1px solid var(--b2);border-radius:14px;padding:20px;}
 .panel-full{grid-column:1/-1;}
 .panel h2{font-size:13px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px;}
+.panel h2.tg-title{color:var(--tg);}
 
 /* TABLE */
 .table-wrap{max-height:480px;overflow:auto;border:1px solid var(--b2);border-radius:10px;}
 table{width:100%;border-collapse:collapse;}
 thead{position:sticky;top:0;z-index:2;}
 th{background:#0a1520;color:var(--teal);font-size:10px;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;padding:11px 13px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;}
+.tg-th{color:var(--tg);}
 td{padding:9px 13px;border-bottom:1px solid var(--b2);font-size:13px;color:var(--text);vertical-align:middle;}
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:rgba(0,230,180,.03);}
@@ -90,10 +113,12 @@ tr:hover td{background:rgba(0,230,180,.03);}
 .badge-red{background:var(--red-bg);color:var(--red);border:1px solid rgba(248,113,113,.25);}
 .badge-blue{background:rgba(59,130,246,.12);color:#60a5fa;border:1px solid rgba(59,130,246,.2);}
 .badge-purple{background:rgba(167,139,250,.12);color:var(--purple);border:1px solid rgba(167,139,250,.2);}
+.badge-tg{background:var(--tg-bg);color:var(--tg);border:1px solid rgba(41,182,246,.25);}
 
 /* STATUS */
 .status-bar{margin-top:12px;color:var(--muted);font-size:12px;display:flex;gap:8px;align-items:center;}
 .dot-pulse{width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;animation:pulse 1.5s ease-in-out infinite;}
+.dot-tg{background:var(--tg);}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);}}
 
 /* LOADER */
@@ -101,24 +126,28 @@ tr:hover td{background:rgba(0,230,180,.03);}
 .loader::before{content:'';display:block;width:32px;height:32px;border:2px solid var(--b2);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 14px;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-/* PRICE */
 .price{font-weight:700;color:#fff;}
-
-/* DUPLICATE HIGHLIGHT */
 .dup-row td{background:rgba(245,158,11,.04)!important;}
 .dup-badge{cursor:help;}
-
-/* NOT LISTED */
 .not-listed td:first-child{color:#f87171;}
 
-/* SEARCH */
 .search-bar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
 .search-bar input{flex:1;min-width:200px;}
 
+/* TG DAY SEPARATOR */
+.day-sep td{background:rgba(41,182,246,.06)!important;color:var(--tg);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:6px 13px!important;}
+
+/* CHART */
+.chart-wrap{display:flex;align-items:flex-end;gap:6px;height:80px;margin-bottom:16px;}
+.chart-bar-col{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;}
+.chart-bar{width:100%;background:var(--tg);border-radius:4px 4px 0 0;min-height:2px;transition:height .3s;}
+.chart-lbl{font-size:9px;color:var(--muted);white-space:nowrap;}
+.chart-val{font-size:10px;color:var(--tg);font-weight:700;}
+
 @media(max-width:900px){
-  .cards{grid-template-columns:repeat(2,1fr);}
+  .cards,.cards-tg{grid-template-columns:repeat(2,1fr);}
   .panels{grid-template-columns:1fr;}
-  .config-grid{grid-template-columns:1fr;}
+  .config-grid,.config-grid-tg{grid-template-columns:1fr;}
   .header{flex-direction:column;}
 }
 </style>
@@ -129,190 +158,304 @@ tr:hover td{background:rgba(0,230,180,.03);}
   <header class="header">
     <div class="header-left">
       <div class="logo">Melofone</div>
-      <h1>OLX Монітор</h1>
-      <p class="subtitle">Активні оголошення · Дублі · Невиставлені товари</p>
+      <h1>Монітор продажів</h1>
+      <p class="subtitle">OLX · Telegram · Google Sheets</p>
     </div>
     <div class="header-right">
-      <button class="btn btn-secondary" onclick="loadAll()">⟳ Оновити все</button>
+      <button class="btn btn-secondary" onclick="loadOlxTab()">⟳ Оновити OLX</button>
+      <button class="btn btn-tg" onclick="loadTgTab()">⟳ Оновити Telegram</button>
     </div>
   </header>
 
-  <!-- CONFIG -->
-  <div class="config-panel">
-    <div class="config-title">⚙ Налаштування</div>
-    <div class="config-grid">
-      <div class="field">
-        <label>Cloudflare Worker URL (твій проксі)</label>
-        <input id="proxyUrl" value="https://YOUR_WORKER.YOUR_SUBDOMAIN.workers.dev" placeholder="https://olx-proxy.yourname.workers.dev"/>
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active" id="tab-olx" onclick="switchTab('olx')">📦 OLX Монітор</div>
+    <div class="tab tg-tab" id="tab-tg" onclick="switchTab('tg')">✈ Telegram Канал</div>
+  </div>
+
+  <!-- ══ OLX TAB ═══════════════════════════════════════════════ -->
+  <div class="tab-panel active" id="panel-olx">
+
+    <div class="config-panel">
+      <div class="config-title">⚙ Налаштування OLX</div>
+      <div class="config-grid">
+        <div class="field">
+          <label>Cloudflare Worker URL</label>
+          <input id="proxyUrl" value="https://YOUR_WORKER.YOUR_SUBDOMAIN.workers.dev" placeholder="https://olx-proxy.yourname.workers.dev"/>
+        </div>
+        <div class="field">
+          <label>OLX User ID</label>
+          <input id="olxUserId" value="" placeholder="напр. 12345678"/>
+        </div>
+        <div class="field">
+          <button class="btn" onclick="loadOlxTab()" style="width:100%">Завантажити</button>
+        </div>
       </div>
-      <div class="field">
-        <label>OLX User ID (з URL профілю)</label>
-        <input id="olxUserId" value="" placeholder="напр. 12345678"/>
-      </div>
-      <div class="field">
-        <button class="btn" onclick="loadAll()" style="width:100%;margin-top:0;">Завантажити</button>
+      <div style="margin-top:12px;font-size:12px;color:var(--muted);">
+        💡 Як отримати User ID: відкрий <a href="https://melofone.olx.ua/uk/home/?tab=ratings" target="_blank" style="color:var(--teal)">melofone.olx.ua</a> → Переглянути код → знайди "userId"
       </div>
     </div>
-    <div style="margin-top:12px;font-size:12px;color:var(--muted);">
-      💡 Як отримати User ID: відкрий <a href="https://melofone.olx.ua/uk/home/?tab=ratings" target="_blank" style="color:var(--teal)">melofone.olx.ua</a> → правою кнопкою → Переглянути код → знайди "userId" або "user_id" в HTML
+
+    <section class="cards">
+      <div class="card"><div class="card-lbl">Активних оголошень</div><div class="card-val c1" id="statTotal">—</div></div>
+      <div class="card"><div class="card-lbl">Унікальних моделей</div><div class="card-val c2" id="statUnique">—</div></div>
+      <div class="card"><div class="card-lbl">Дублікатів</div><div class="card-val c3" id="statDupes">—</div></div>
+      <div class="card"><div class="card-lbl">Не виставлено на OLX</div><div class="card-val c4" id="statMissing">—</div></div>
+    </section>
+
+    <div class="panels">
+      <div class="panel panel-full">
+        <h2>Активні оголошення OLX</h2>
+        <div class="search-bar">
+          <input id="olxSearch" placeholder="🔍 Пошук по назві..." oninput="filterOlx()"/>
+          <select id="olxFilterDupe" onchange="filterOlx()">
+            <option value="">Всі</option>
+            <option value="dup">Тільки дублі</option>
+            <option value="ok">Унікальні</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Назва товару</th><th>Ціна</th><th>Статус</th><th>Дублі</th><th>Посилання</th></tr></thead>
+            <tbody id="olxBody"><tr><td colspan="6" class="loader">Натисни «Завантажити»</td></tr></tbody>
+          </table>
+        </div>
+        <div class="status-bar"><div class="dot-pulse" id="olxDot" style="display:none;"></div><span id="olxStatus">Очікування завантаження...</span></div>
+      </div>
+
+      <div class="panel panel-full">
+        <h2>⚠ Не виставлено на OLX</h2>
+        <div class="search-bar">
+          <input id="missingSearch" placeholder="🔍 Пошук..." oninput="filterMissing()"/>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Назва товару (зі складу)</th><th>Кількість</th><th>Статус</th></tr></thead>
+            <tbody id="missingBody"><tr><td colspan="4" class="loader">Очікування завантаження...</td></tr></tbody>
+          </table>
+        </div>
+        <div class="status-bar"><span id="missingStatus">—</span></div>
+      </div>
     </div>
   </div>
 
-  <!-- STAT CARDS -->
-  <section class="cards">
-    <div class="card"><div class="card-lbl">Активних оголошень</div><div class="card-val c1" id="statTotal">—</div></div>
-    <div class="card"><div class="card-lbl">Унікальних моделей</div><div class="card-val c2" id="statUnique">—</div></div>
-    <div class="card"><div class="card-lbl">Дублікатів</div><div class="card-val c3" id="statDupes">—</div></div>
-    <div class="card"><div class="card-lbl">Не виставлено на OLX</div><div class="card-val c4" id="statMissing">—</div></div>
-  </section>
+  <!-- ══ TELEGRAM TAB ═══════════════════════════════════════════ -->
+  <div class="tab-panel" id="panel-tg">
 
-  <div class="panels">
-    <!-- OLX LISTINGS -->
-    <div class="panel panel-full">
-      <h2>Активні оголошення OLX</h2>
-      <div class="search-bar">
-        <input id="olxSearch" placeholder="🔍 Пошук по назві..." oninput="filterOlx()"/>
-        <select id="olxFilterDupe" onchange="filterOlx()">
-          <option value="">Всі</option>
-          <option value="dup">Тільки дублі</option>
-          <option value="ok">Унікальні</option>
-        </select>
+    <div class="config-panel">
+      <div class="config-title" style="color:var(--tg);">⚙ Налаштування Telegram</div>
+      <div class="config-grid-tg">
+        <div class="field">
+          <label>Cloudflare Worker URL</label>
+          <input id="tgWorkerUrl" placeholder="https://YOUR_WORKER.workers.dev"/>
+        </div>
+        <div class="field">
+          <label>Назва Telegram канала</label>
+          <input id="tgChannel" value="@Melofone1" placeholder="@Melofone1"/>
+        </div>
+        <div class="field">
+          <label>Днів назад</label>
+          <select id="tgDays">
+            <option value="7">7 днів</option>
+            <option value="10" selected>10 днів</option>
+            <option value="14">14 днів</option>
+            <option value="30">30 днів</option>
+          </select>
+        </div>
+        <div class="field">
+          <button class="btn btn-tg" onclick="loadTgTab()" style="width:100%">Завантажити</button>
+        </div>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>#</th><th>Назва товару</th><th>Ціна</th><th>Статус</th><th>Дублі</th><th>Посилання</th></tr></thead>
-          <tbody id="olxBody"><tr><td colspan="6" class="loader">Натисни «Завантажити»</td></tr></tbody>
-        </table>
+      <div style="margin-top:12px;font-size:12px;color:var(--muted);">
+        💡 Перший запуск: відкрий <b style="color:var(--tg)">[Worker URL]/setup</b> у браузері — це зареєструє Telegram webhook. Зроби це один раз.
       </div>
-      <div class="status-bar"><div class="dot-pulse" id="olxDot" style="display:none;"></div><span id="olxStatus">Очікування завантаження...</span></div>
     </div>
 
-    <!-- NOT LISTED -->
-    <div class="panel panel-full">
-      <h2>⚠ Не виставлено на OLX (є у Дроп, немає на OLX)</h2>
-      <div class="search-bar">
-        <input id="missingSearch" placeholder="🔍 Пошук..." oninput="filterMissing()"/>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>#</th><th>Назва товару (зі складу)</th><th>Кількість</th><th>Статус</th></tr></thead>
-          <tbody id="missingBody"><tr><td colspan="4" class="loader">Очікування завантаження...</td></tr></tbody>
-        </table>
-      </div>
-      <div class="status-bar"><span id="missingStatus">—</span></div>
-    </div>
-  </div>
+    <!-- TG STAT CARDS -->
+    <section class="cards-tg">
+      <div class="card"><div class="card-lbl">Постів за період</div><div class="card-val c5" id="tgStatTotal">—</div></div>
+      <div class="card"><div class="card-lbl">Унікальних моделей</div><div class="card-val c2" id="tgStatUniq">—</div></div>
+      <div class="card"><div class="card-lbl">Збіг з асортиментом</div><div class="card-val c1" id="tgStatMatch">—</div></div>
+      <div class="card"><div class="card-lbl">Немає в Telegram</div><div class="card-val c4" id="tgStatMissing">—</div></div>
+    </section>
 
-</div>
+    <div class="panels">
+
+      <!-- CHART -->
+      <div class="panel">
+        <h2 class="tg-title">📊 Активність по днях</h2>
+        <div class="chart-wrap" id="tgChart"></div>
+        <div style="font-size:11px;color:var(--muted);">Кількість постів на день</div>
+      </div>
+
+      <!-- TOP MODELS -->
+      <div class="panel">
+        <h2 class="tg-title">🏆 Топ моделей у каналі</h2>
+        <div class="table-wrap" style="max-height:220px;">
+          <table>
+            <thead><tr>
+              <th class="tg-th">#</th>
+              <th class="tg-th">Модель</th>
+              <th class="tg-th">Постів</th>
+              <th class="tg-th">В асортименті</th>
+            </tr></thead>
+            <tbody id="tgTopBody"><tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted);">—</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ALL TG POSTS -->
+      <div class="panel panel-full">
+        <h2 class="tg-title">✈ Всі пости каналу</h2>
+        <div class="search-bar">
+          <input id="tgSearch" placeholder="🔍 Пошук по моделі..." oninput="filterTg()"/>
+          <select id="tgFilterMatch" onchange="filterTg()">
+            <option value="">Всі пости</option>
+            <option value="match">Є в асортименті</option>
+            <option value="nomatch">Немає в асортименті</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th class="tg-th">#</th>
+              <th class="tg-th">Дата</th>
+              <th class="tg-th">Модель</th>
+              <th class="tg-th">Ціна</th>
+              <th class="tg-th">В асортименті</th>
+              <th class="tg-th">Посилання</th>
+            </tr></thead>
+            <tbody id="tgBody"><tr><td colspan="6" class="loader">Натисни «Завантажити»</td></tr></tbody>
+          </table>
+        </div>
+        <div class="status-bar"><div class="dot-pulse dot-tg" id="tgDot" style="display:none;"></div><span id="tgStatus">Очікування...</span></div>
+      </div>
+
+      <!-- NOT IN TG -->
+      <div class="panel panel-full">
+        <h2 class="tg-title">⚠ Є в асортименті, але не публікувалось в Telegram</h2>
+        <div class="search-bar">
+          <input id="tgMissingSearch" placeholder="🔍 Пошук..." oninput="filterTgMissing()"/>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th class="tg-th">#</th>
+              <th class="tg-th">Назва товару (зі складу)</th>
+              <th class="tg-th">Статус</th>
+            </tr></thead>
+            <tbody id="tgMissingBody"><tr><td colspan="3" style="text-align:center;padding:20px;color:var(--muted);">—</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /panel-tg -->
+
+</div><!-- /page -->
 
 <script>
-// ── CONFIG ─────────────────────────────────────────────
-const SHEET_ID = "1dfB_KascVkm3yQlhJVAf3P-5vnYaPIQWsthSp9ai1SI";
+// ── CONFIG ────────────────────────────────────────────────────
+const SHEET_ID   = "1dfB_KascVkm3yQlhJVAf3P-5vnYaPIQWsthSp9ai1SI";
 const SHEET_NAME = "Дроп";
 
-// ── STATE ──────────────────────────────────────────────
-let allOlx = [];      // всі оголошення OLX
-let stockItems = [];  // Дроп аркуш
+// ── STATE ─────────────────────────────────────────────────────
+let allOlx      = [];
+let stockItems  = [];
+let tgPosts     = [];
 let filteredOlx = [];
-let filteredMissing = [];
 
-// ── UTILS ──────────────────────────────────────────────
+// ── UTILS ─────────────────────────────────────────────────────
 function norm(s) {
-  return String(s || "")
-    .toLowerCase()
-    .replace(/\s+/g, " ")
-    .replace(/[''`"«»]/g, "")
-    .trim();
+  return String(s || "").toLowerCase().replace(/\s+/g," ").replace(/[''`"«»]/g,"").trim();
 }
-
+function escHtml(v) {
+  return String(v||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
 function csvUrl(sheet) {
   return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheet)}`;
 }
-
 function parseCSV(text) {
-  const rows = []; let row = [], val = "", q = false;
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i], n = text[i+1];
-    if (c==='"'&&q&&n==='"') { val+='"'; i++; }
-    else if (c==='"') { q=!q; }
-    else if (c===','&&!q) { row.push(val); val=""; }
-    else if ((c==='\n'||c==='\r')&&!q) {
-      if (val||row.length) { row.push(val); rows.push(row); row=[]; val=""; }
-      if (c==='\r'&&n==='\n') i++;
-    } else val+=c;
+  const rows=[]; let row=[],val="",q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i],n=text[i+1];
+    if(c==='"'&&q&&n==='"'){val+='"';i++;}
+    else if(c==='"'){q=!q;}
+    else if(c===','&&!q){row.push(val);val="";}
+    else if((c==='\n'||c==='\r')&&!q){
+      if(val||row.length){row.push(val);rows.push(row);row=[];val="";}
+      if(c==='\r'&&n==='\n')i++;
+    }else val+=c;
   }
-  if (val||row.length) { row.push(val); rows.push(row); }
+  if(val||row.length){row.push(val);rows.push(row);}
   return rows;
 }
+function formatDate(dateStr) {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString("uk-UA",{day:"2-digit",month:"2-digit"});
+}
 
-// ── LOAD GOOGLE SHEET ─────────────────────────────────
+// ── TABS ─────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+  document.getElementById("tab-"+name).classList.add("active");
+  document.getElementById("panel-"+name).classList.add("active");
+}
+
+// ── LOAD SHEET ────────────────────────────────────────────────
 async function loadSheet() {
   const r = await fetch(csvUrl(SHEET_NAME));
   const rows = parseCSV(await r.text());
-  // Стовпець A = назва товару
-  return rows.slice(1)
-    .map(r => String(r[0]||"").trim())
-    .filter(Boolean);
+  return rows.slice(1).map(r => String(r[0]||"").trim()).filter(Boolean);
 }
 
-// ── LOAD OLX ─────────────────────────────────────────
+// ── MATCH: чи є модель з поста в асортименті ─────────────────
+function matchStock(postModel, stock) {
+  const nm = norm(postModel);
+  return stock.some(s => {
+    const ns = norm(s);
+    // Шукаємо часткове збіг: модель з поста міститься в назві зі складу або навпаки
+    return ns.includes(nm) || nm.includes(ns) ||
+           // Або перші 20 символів збігаються
+           (nm.length > 8 && ns.length > 8 && ns.slice(0,18) === nm.slice(0,18));
+  });
+}
+
+// ── LOAD OLX ─────────────────────────────────────────────────
 async function loadOlx() {
-  const proxy = document.getElementById("proxyUrl").value.trim().replace(/\/$/, "");
+  const proxy  = document.getElementById("proxyUrl").value.trim().replace(/\/$/,"");
   const userId = document.getElementById("olxUserId").value.trim();
+  if (!proxy || proxy.includes("YOUR_WORKER")) throw new Error("Вкажи URL Worker проксі");
 
-  if (!proxy || proxy.includes("YOUR_WORKER")) {
-    throw new Error("Вкажи URL Cloudflare Worker проксі");
-  }
-
-  let adverts = [];
-  let offset = 0;
-  const limit = 50;
-
-  // OLX публічний API для оголошень користувача
-  while (true) {
+  let adverts=[], offset=0, limit=50;
+  while(true) {
     let url;
     if (userId) {
       url = `https://www.olx.ua/api/v1/offers/?user_id=${userId}&offset=${offset}&limit=${limit}&sort_by=created_at:desc`;
     } else {
-      // Fallback — парсимо RSS/HTML профілю
       url = `https://www.olx.ua/uk/list/user/melofone/?page=${Math.floor(offset/limit)+1}`;
     }
-
-    const resp = await fetch(`${proxy}?url=${encodeURIComponent(url)}`);
+    const resp = await fetch(`${proxy}/proxy?url=${encodeURIComponent(url)}`);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const text = await resp.text();
-
     let data;
-    try { data = JSON.parse(text); } catch(e) {
-      // Не JSON — може бути HTML, спробуємо витягти JSON з HTML
-      data = extractJsonFromHtml(text);
-    }
-
+    try { data = JSON.parse(text); } catch(e) { data = extractJsonFromHtml(text); }
     if (!data) break;
-
     const items = data.data || data.offers || data.adverts || [];
     if (!items.length) break;
-
     adverts = adverts.concat(items);
     offset += limit;
-    if (items.length < limit) break;
-    if (offset > 500) break; // safety
+    if (items.length < limit || offset > 500) break;
   }
-
   return adverts;
 }
-
 function extractJsonFromHtml(html) {
-  // Пробуємо знайти JSON в __NEXT_DATA__ або window.__data
   const m = html.match(/__NEXT_DATA__[^>]*>(\{.*?\})<\/script>/s)
              || html.match(/window\.__data\s*=\s*(\{.*?\});/s);
-  if (m) {
-    try { return JSON.parse(m[1]); } catch(e) {}
-  }
+  if (m) { try { return JSON.parse(m[1]); } catch(e) {} }
   return null;
 }
-
-// ── NORMALIZE OLX ITEM ────────────────────────────────
 function normalizeAdvert(item) {
   return {
     id:    item.id || item.key || "",
@@ -322,73 +465,49 @@ function normalizeAdvert(item) {
     status: item.status || "active",
   };
 }
-
 function extractPrice(item) {
   if (item.price) {
-    if (typeof item.price === "object") {
+    if (typeof item.price === "object")
       return item.price.value?.value || item.price.regularPrice?.value || item.price.amount || 0;
-    }
     return item.price;
   }
   return 0;
 }
-
 function formatPrice(p) {
   if (!p) return "—";
   return Number(p).toLocaleString("uk-UA") + " ₴";
 }
-
-// ── FIND DUPLICATES ───────────────────────────────────
 function findDuplicates(adverts) {
-  const groups = {};
+  const groups={};
   adverts.forEach(a => {
-    const key = norm(a.title);
-    if (!groups[key]) groups[key] = [];
-    groups[key].push(a.id);
+    const k=norm(a.title);
+    if(!groups[k]) groups[k]=[];
+    groups[k].push(a.id);
   });
   return groups;
 }
-
-// ── FIND NOT LISTED ───────────────────────────────────
 function findNotListed(stock, adverts) {
-  const olxTitles = new Set(adverts.map(a => norm(a.title)));
-
-  // Групуємо склад по назві
-  const stockGroups = {};
-  stock.forEach(name => {
-    const key = norm(name);
-    stockGroups[key] = (stockGroups[key] || 0) + 1;
-  });
-
+  const olxTitles = new Set(adverts.map(a=>norm(a.title)));
+  const stockGroups={};
+  stock.forEach(n => { const k=norm(n); stockGroups[k]=(stockGroups[k]||0)+1; });
   return Object.entries(stockGroups)
-    .filter(([key]) => {
-      // Перевіряємо чи є хоч одне оголошення що містить це
-      return !olxTitles.has(key) && ![...olxTitles].some(t => t.includes(key) || key.includes(t.slice(0, 20)));
-    })
-    .map(([key, qty]) => {
-      const original = stock.find(s => norm(s) === key) || key;
-      return { name: original, qty, key };
-    });
+    .filter(([k]) => !olxTitles.has(k) && ![...olxTitles].some(t=>t.includes(k)||k.includes(t.slice(0,20))))
+    .map(([k,qty]) => ({ name: stock.find(s=>norm(s)===k)||k, qty, key:k }));
 }
 
-// ── RENDER OLX TABLE ─────────────────────────────────
+// ── RENDER OLX ────────────────────────────────────────────────
 function renderOlx(items, dupeGroups) {
   const body = document.getElementById("olxBody");
   if (!items.length) {
-    body.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted);">Оголошення не знайдені</td></tr>`;
+    body.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted);">Оголошення не знайдені</td></tr>`;
     return;
   }
-
-  body.innerHTML = items.map((a, i) => {
-    const key = norm(a.title);
-    const group = dupeGroups[key] || [];
-    const isDup = group.length > 1;
-    const rowClass = isDup ? "dup-row" : "";
+  body.innerHTML = items.map((a,i) => {
+    const key=norm(a.title), group=dupeGroups[key]||[], isDup=group.length>1;
     const dupBadge = isDup
-      ? `<span class="badge badge-warn dup-badge" title="Однакова назва у ${group.length} оголошень">✕${group.length} дублі</span>`
+      ? `<span class="badge badge-warn dup-badge" title="${group.length} дублів">✕${group.length} дублі</span>`
       : `<span class="badge badge-ok">унікальне</span>`;
-
-    return `<tr class="${rowClass}">
+    return `<tr class="${isDup?"dup-row":""}">
       <td style="color:var(--muted)">${i+1}</td>
       <td>${escHtml(a.title)}</td>
       <td class="price">${formatPrice(a.price)}</td>
@@ -398,107 +517,239 @@ function renderOlx(items, dupeGroups) {
     </tr>`;
   }).join("");
 }
-
-// ── RENDER MISSING TABLE ─────────────────────────────
 function renderMissing(items) {
   const body = document.getElementById("missingBody");
   if (!items.length) {
-    body.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--muted);">✓ Всі товари зі складу виставлені на OLX</td></tr>`;
+    body.innerHTML=`<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--muted);">✓ Всі товари виставлені на OLX</td></tr>`;
     return;
   }
-
-  body.innerHTML = items.map((item, i) => `
+  body.innerHTML = items.map((item,i) => `
     <tr class="not-listed">
       <td style="color:var(--muted)">${i+1}</td>
       <td>${escHtml(item.name)}</td>
       <td><span class="badge badge-blue">${item.qty} шт.</span></td>
       <td><span class="badge badge-red">не виставлено</span></td>
-    </tr>
-  `).join("");
+    </tr>`).join("");
 }
-
-// ── FILTERS ──────────────────────────────────────────
 function filterOlx() {
-  const q = norm(document.getElementById("olxSearch").value);
-  const dupeFilter = document.getElementById("olxFilterDupe").value;
-  const dupeGroups = findDuplicates(allOlx);
-
+  const q=norm(document.getElementById("olxSearch").value);
+  const df=document.getElementById("olxFilterDupe").value;
+  const dg=findDuplicates(allOlx);
   filteredOlx = allOlx.filter(a => {
-    const matchQ = !q || norm(a.title).includes(q);
-    const key = norm(a.title);
-    const isDup = (dupeGroups[key]||[]).length > 1;
-    const matchDupe = !dupeFilter || (dupeFilter==="dup"&&isDup) || (dupeFilter==="ok"&&!isDup);
-    return matchQ && matchDupe;
+    const mq=!q||norm(a.title).includes(q);
+    const isDup=(dg[norm(a.title)]||[]).length>1;
+    const md=!df||(df==="dup"&&isDup)||(df==="ok"&&!isDup);
+    return mq&&md;
   });
-
-  renderOlx(filteredOlx, dupeGroups);
+  renderOlx(filteredOlx, dg);
 }
-
 function filterMissing() {
-  const q = norm(document.getElementById("missingSearch").value);
-  const items = findNotListed(stockItems, allOlx).filter(m => !q || norm(m.name).includes(q));
-  renderMissing(items);
+  const q=norm(document.getElementById("missingSearch").value);
+  renderMissing(findNotListed(stockItems,allOlx).filter(m=>!q||norm(m.name).includes(q)));
 }
 
-// ── MAIN LOAD ────────────────────────────────────────
-async function loadAll() {
-  document.getElementById("olxDot").style.display = "block";
-  document.getElementById("olxStatus").textContent = "Завантаження...";
-  document.getElementById("olxBody").innerHTML = '<tr><td colspan="6"><div class="loader"></div></td></tr>';
-  document.getElementById("missingBody").innerHTML = '<tr><td colspan="4"><div class="loader"></div></td></tr>';
-
+// ── OLX MAIN LOAD ─────────────────────────────────────────────
+async function loadOlxTab() {
+  document.getElementById("olxDot").style.display="block";
+  document.getElementById("olxStatus").textContent="Завантаження...";
+  document.getElementById("olxBody").innerHTML='<tr><td colspan="6"><div class="loader"></div></td></tr>';
+  document.getElementById("missingBody").innerHTML='<tr><td colspan="4"><div class="loader"></div></td></tr>';
   try {
-    // Паралельно тягнемо OLX і Google Sheet
     const [olxRaw, stock] = await Promise.all([
-      loadOlx().catch(e => { console.error("OLX error:", e); return []; }),
-      loadSheet().catch(e => { console.error("Sheet error:", e); return []; }),
+      loadOlx().catch(e=>{console.error(e);return [];}),
+      loadSheet().catch(e=>{console.error(e);return [];}),
     ]);
-
-    allOlx = olxRaw.map(normalizeAdvert);
-    stockItems = stock;
-
-    const dupeGroups = findDuplicates(allOlx);
-    const dupes = Object.values(dupeGroups).filter(g => g.length > 1).length;
-    const missing = findNotListed(stockItems, allOlx);
-    const uniqueModels = new Set(allOlx.map(a => norm(a.title))).size;
-
-    // Stats
-    document.getElementById("statTotal").textContent = allOlx.length;
-    document.getElementById("statUnique").textContent = uniqueModels;
-    document.getElementById("statDupes").textContent = dupes;
-    document.getElementById("statMissing").textContent = missing.length;
-
-    // Render tables
-    filteredOlx = allOlx;
-    renderOlx(allOlx, dupeGroups);
-    renderMissing(missing);
-
-    const now = new Date().toLocaleString("uk-UA");
-    document.getElementById("olxStatus").textContent = `Оновлено: ${now} · OLX: ${allOlx.length} оголошень · Склад: ${stockItems.length} позицій`;
-    document.getElementById("missingStatus").textContent = `Не виставлено: ${missing.length} із ${new Set(stockItems.map(s=>norm(s))).size} унікальних товарів`;
-
-    if (!allOlx.length) {
-      document.getElementById("olxStatus").textContent = "⚠ OLX оголошення не завантажились. Перевір налаштування проксі та User ID.";
-    }
-
+    allOlx=olxRaw.map(normalizeAdvert); stockItems=stock;
+    const dg=findDuplicates(allOlx);
+    const dupes=Object.values(dg).filter(g=>g.length>1).length;
+    const missing=findNotListed(stockItems,allOlx);
+    const uniq=new Set(allOlx.map(a=>norm(a.title))).size;
+    document.getElementById("statTotal").textContent=allOlx.length;
+    document.getElementById("statUnique").textContent=uniq;
+    document.getElementById("statDupes").textContent=dupes;
+    document.getElementById("statMissing").textContent=missing.length;
+    filteredOlx=allOlx;
+    renderOlx(allOlx,dg); renderMissing(missing);
+    const now=new Date().toLocaleString("uk-UA");
+    document.getElementById("olxStatus").textContent=`Оновлено: ${now} · OLX: ${allOlx.length} оголошень · Склад: ${stockItems.length} позицій`;
+    document.getElementById("missingStatus").textContent=`Не виставлено: ${missing.length} із ${new Set(stockItems.map(s=>norm(s))).size} унікальних товарів`;
   } catch(e) {
-    document.getElementById("olxStatus").textContent = "Помилка: " + e.message;
-    console.error(e);
+    document.getElementById("olxStatus").textContent="Помилка: "+e.message;
+  }
+  document.getElementById("olxDot").style.display="none";
+}
+
+// ── TELEGRAM LOAD ─────────────────────────────────────────────
+async function loadTgTab() {
+  const workerUrl = document.getElementById("tgWorkerUrl").value.trim().replace(/\/$/,"");
+  const days      = document.getElementById("tgDays").value;
+  if (!workerUrl || workerUrl.includes("YOUR_WORKER")) {
+    document.getElementById("tgStatus").textContent = "⚠ Вкажи URL Cloudflare Worker";
+    return;
   }
 
-  document.getElementById("olxDot").style.display = "none";
+  document.getElementById("tgDot").style.display="block";
+  document.getElementById("tgStatus").textContent="Завантаження постів...";
+  document.getElementById("tgBody").innerHTML='<tr><td colspan="6"><div class="loader"></div></td></tr>';
+
+  try {
+    // Паралельно: пости з KV + асортимент
+    const [resp, stock] = await Promise.all([
+      fetch(`${workerUrl}/posts?days=${days}`).then(r=>r.json()),
+      stockItems.length ? Promise.resolve(stockItems) : loadSheet(),
+    ]);
+    stockItems = stock;
+
+    if (!resp.ok) throw new Error(resp.error || "Worker error");
+    tgPosts = resp.posts || [];
+
+    renderTgStats(tgPosts, stock, days);
+    renderTgChart(tgPosts, days);
+    renderTgTable(tgPosts, stock);
+    renderTgTop(tgPosts, stock);
+    renderTgMissing(tgPosts, stock);
+
+    const now=new Date().toLocaleString("uk-UA");
+    document.getElementById("tgStatus").textContent=`Оновлено: ${now} · Постів за ${days} днів: ${tgPosts.length}`;
+
+  } catch(e) {
+    document.getElementById("tgStatus").textContent="Помилка: "+e.message;
+    document.getElementById("tgBody").innerHTML=`<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--red);">Помилка: ${escHtml(e.message)}</td></tr>`;
+    console.error(e);
+  }
+  document.getElementById("tgDot").style.display="none";
 }
 
-function escHtml(v) {
-  return String(v||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+function renderTgStats(posts, stock, days) {
+  const uniqModels = new Set(posts.map(p=>norm(p.model))).size;
+  const matched    = posts.filter(p=>matchStock(p.model, stock)).length;
+  // Є в асортименті але не постили
+  const postedNorms = new Set(posts.map(p=>norm(p.model)));
+  const notPosted   = [...new Set(stock.map(s=>norm(s)))].filter(s=>![...postedNorms].some(pm=>pm.includes(s)||s.includes(pm))).length;
+
+  document.getElementById("tgStatTotal").textContent  = posts.length;
+  document.getElementById("tgStatUniq").textContent   = uniqModels;
+  document.getElementById("tgStatMatch").textContent  = matched;
+  document.getElementById("tgStatMissing").textContent= notPosted;
 }
 
-// Автоматично тягнемо Google Sheet при старті
-loadSheet().then(s => {
-  stockItems = s;
-  renderMissing([]);
-  document.getElementById("missingStatus").textContent = `Завантажено зі складу: ${s.length} позицій. Натисни «Завантажити» щоб отримати дані OLX.`;
-}).catch(() => {});
+function renderTgChart(posts, days) {
+  const wrap = document.getElementById("tgChart");
+  // Підрахунок по датах
+  const counts = {};
+  for (let i=0; i<days; i++) {
+    const d=new Date(); d.setDate(d.getDate()-i);
+    counts[d.toISOString().slice(0,10)] = 0;
+  }
+  posts.forEach(p => { if (counts[p.date] !== undefined) counts[p.date]++; });
+
+  const dates = Object.keys(counts).sort();
+  const max   = Math.max(...Object.values(counts), 1);
+
+  wrap.innerHTML = dates.map(date => {
+    const cnt = counts[date];
+    const pct = Math.max((cnt/max)*100, cnt>0?8:2);
+    return `<div class="chart-bar-col">
+      <div class="chart-val">${cnt||""}</div>
+      <div class="chart-bar" style="height:${pct}%;"></div>
+      <div class="chart-lbl">${formatDate(date)}</div>
+    </div>`;
+  }).join("");
+}
+
+function renderTgTable(posts, stock) {
+  const body = document.getElementById("tgBody");
+  if (!posts.length) {
+    body.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted);">Постів за вибраний період не знайдено.<br><small>Переконайся що webhook налаштований: відкрий [Worker URL]/setup</small></td></tr>`;
+    return;
+  }
+  body.innerHTML = posts.map((p,i) => {
+    const inStock = matchStock(p.model, stock);
+    const badge   = inStock
+      ? `<span class="badge badge-ok">✓ є</span>`
+      : `<span class="badge badge-warn">немає</span>`;
+    return `<tr>
+      <td style="color:var(--muted)">${i+1}</td>
+      <td style="color:var(--muted);font-size:11px;">${escHtml(p.date)}</td>
+      <td><b>${escHtml(p.model)}</b></td>
+      <td class="price">${escHtml(p.price||"—")}</td>
+      <td>${badge}</td>
+      <td><a href="${escHtml(p.tg_url)}" target="_blank" style="color:var(--tg);text-decoration:none;font-size:12px;">Telegram →</a></td>
+    </tr>`;
+  }).join("");
+}
+
+function renderTgTop(posts, stock) {
+  const counts={};
+  posts.forEach(p => { const k=norm(p.model); counts[k]=(counts[k]||0)+1; });
+  const top = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const body = document.getElementById("tgTopBody");
+  if (!top.length) { body.innerHTML=`<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted);">—</td></tr>`; return; }
+  body.innerHTML = top.map(([k,cnt],i) => {
+    const original = posts.find(p=>norm(p.model)===k)?.model || k;
+    const inStock  = matchStock(original, stock);
+    return `<tr>
+      <td style="color:var(--muted)">${i+1}</td>
+      <td>${escHtml(original)}</td>
+      <td><span class="badge badge-tg">${cnt}</span></td>
+      <td>${inStock?'<span class="badge badge-ok">✓</span>':'<span class="badge badge-warn">—</span>'}</td>
+    </tr>`;
+  }).join("");
+}
+
+function renderTgMissing(posts, stock) {
+  const postedNorms = new Set(posts.map(p=>norm(p.model)));
+  const missing = [...new Set(stock)].filter(s => {
+    const ns=norm(s);
+    return ![...postedNorms].some(pm=>pm.includes(ns)||ns.includes(pm));
+  });
+  const body=document.getElementById("tgMissingBody");
+  if (!missing.length) {
+    body.innerHTML=`<tr><td colspan="3" style="text-align:center;padding:32px;color:var(--muted);">✓ Всі товари з асортименту публікувались в Telegram</td></tr>`;
+    return;
+  }
+  body.innerHTML = missing.map((m,i) => `
+    <tr>
+      <td style="color:var(--muted)">${i+1}</td>
+      <td>${escHtml(m)}</td>
+      <td><span class="badge badge-red">не публікувалось</span></td>
+    </tr>`).join("");
+}
+
+function filterTg() {
+  const q=norm(document.getElementById("tgSearch").value);
+  const mf=document.getElementById("tgFilterMatch").value;
+  const filtered=tgPosts.filter(p=>{
+    const mq=!q||norm(p.model).includes(q);
+    const inStock=matchStock(p.model,stockItems);
+    const mm=!mf||(mf==="match"&&inStock)||(mf==="nomatch"&&!inStock);
+    return mq&&mm;
+  });
+  renderTgTable(filtered,stockItems);
+}
+
+function filterTgMissing() {
+  const q=norm(document.getElementById("tgMissingSearch").value);
+  const postedNorms=new Set(tgPosts.map(p=>norm(p.model)));
+  const missing=[...new Set(stockItems)].filter(s=>{
+    const ns=norm(s);
+    const notPosted=![...postedNorms].some(pm=>pm.includes(ns)||ns.includes(pm));
+    return notPosted&&(!q||ns.includes(q));
+  });
+  const body=document.getElementById("tgMissingBody");
+  body.innerHTML=missing.map((m,i)=>`
+    <tr>
+      <td style="color:var(--muted)">${i+1}</td>
+      <td>${escHtml(m)}</td>
+      <td><span class="badge badge-red">не публікувалось</span></td>
+    </tr>`).join("") || `<tr><td colspan="3" style="text-align:center;padding:20px;color:var(--muted);">✓ Всі товари публікувались</td></tr>`;
+}
+
+// Автозавантаження складу
+loadSheet().then(s=>{
+  stockItems=s;
+  document.getElementById("missingStatus").textContent=`Завантажено зі складу: ${s.length} позицій.`;
+}).catch(()=>{});
 </script>
 </body>
 </html>
