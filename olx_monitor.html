@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Melofone — OLX Монітор</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:     #080d14;
+  --bg2:    #0d1420;
+  --card:   #111927;
+  --border: rgba(0,230,180,.12);
+  --b2:     rgba(0,230,180,.06);
+  --text:   #e2eaf4;
+  --muted:  #5a7090;
+  --teal:   #00e6b4;
+  --teal-d: #0a2a24;
+  --blue:   #3b82f6;
+  --warn:   #f59e0b;
+  --warn-bg:rgba(245,158,11,.12);
+  --red:    #f87171;
+  --red-bg: rgba(248,113,113,.12);
+  --ok:     #00e6b4;
+  --ok-bg:  rgba(0,230,180,.12);
+  --purple: #a78bfa;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;min-height:100%;font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:rgba(0,230,180,.25);border-radius:4px;}
+
+.page{max-width:1500px;margin:0 auto;padding:28px 24px;}
+
+/* HEADER */
+.header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--b2);}
+.header-left .logo{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--teal);font-weight:600;margin-bottom:6px;}
+h1{font-size:26px;font-weight:800;color:#fff;text-shadow:0 0 20px rgba(0,230,180,.3);}
+.subtitle{color:var(--muted);font-size:13px;margin-top:4px;font-weight:300;}
+.header-right{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+.btn{border:1px solid var(--teal);background:transparent;color:var(--teal);padding:9px 18px;border-radius:10px;cursor:pointer;font-weight:600;font-size:13px;font-family:inherit;transition:all .2s;white-space:nowrap;box-shadow:0 0 12px rgba(0,230,180,.15);}
+.btn:hover{background:var(--teal);color:#000;}
+.btn-secondary{border-color:var(--blue);color:var(--blue);box-shadow:0 0 12px rgba(59,130,246,.1);}
+.btn-secondary:hover{background:var(--blue);color:#fff;}
+
+/* CONFIG */
+.config-panel{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:20px;}
+.config-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--teal);font-weight:600;margin-bottom:14px;}
+.config-grid{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end;}
+.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px;letter-spacing:.5px;}
+input,select{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:10px;background:var(--bg2);color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border-color .2s;}
+input:focus,select:focus{border-color:var(--teal);box-shadow:0 0 10px rgba(0,230,180,.15);}
+
+/* STAT CARDS */
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.card{background:var(--card);border:1px solid var(--b2);border-radius:14px;padding:20px;position:relative;overflow:hidden;transition:border-color .2s;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:14px 14px 0 0;}
+.card:nth-child(1)::before{background:linear-gradient(90deg,#00e6b4,#3b82f6);}
+.card:nth-child(2)::before{background:linear-gradient(90deg,#3b82f6,#a78bfa);}
+.card:nth-child(3)::before{background:linear-gradient(90deg,#f59e0b,#f87171);}
+.card:nth-child(4)::before{background:linear-gradient(90deg,#f87171,#f59e0b);}
+.card:hover{border-color:var(--border);}
+.card-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:600;margin-bottom:8px;}
+.card-val{font-size:34px;font-weight:800;}
+.c1{color:#00e6b4;text-shadow:0 0 16px rgba(0,230,180,.5);}
+.c2{color:#3b82f6;text-shadow:0 0 16px rgba(59,130,246,.4);}
+.c3{color:#f59e0b;text-shadow:0 0 16px rgba(245,158,11,.4);}
+.c4{color:#f87171;text-shadow:0 0 16px rgba(248,113,113,.4);}
+
+/* PANELS */
+.panels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.panel{background:var(--card);border:1px solid var(--b2);border-radius:14px;padding:20px;}
+.panel-full{grid-column:1/-1;}
+.panel h2{font-size:13px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px;}
+
+/* TABLE */
+.table-wrap{max-height:480px;overflow:auto;border:1px solid var(--b2);border-radius:10px;}
+table{width:100%;border-collapse:collapse;}
+thead{position:sticky;top:0;z-index:2;}
+th{background:#0a1520;color:var(--teal);font-size:10px;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;padding:11px 13px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;}
+td{padding:9px 13px;border-bottom:1px solid var(--b2);font-size:13px;color:var(--text);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(0,230,180,.03);}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap;}
+.badge-ok{background:var(--ok-bg);color:var(--ok);border:1px solid rgba(0,230,180,.25);}
+.badge-warn{background:var(--warn-bg);color:var(--warn);border:1px solid rgba(245,158,11,.25);}
+.badge-red{background:var(--red-bg);color:var(--red);border:1px solid rgba(248,113,113,.25);}
+.badge-blue{background:rgba(59,130,246,.12);color:#60a5fa;border:1px solid rgba(59,130,246,.2);}
+.badge-purple{background:rgba(167,139,250,.12);color:var(--purple);border:1px solid rgba(167,139,250,.2);}
+
+/* STATUS */
+.status-bar{margin-top:12px;color:var(--muted);font-size:12px;display:flex;gap:8px;align-items:center;}
+.dot-pulse{width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;animation:pulse 1.5s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);}}
+
+/* LOADER */
+.loader{text-align:center;padding:40px;color:var(--muted);font-size:14px;}
+.loader::before{content:'';display:block;width:32px;height:32px;border:2px solid var(--b2);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 14px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* PRICE */
+.price{font-weight:700;color:#fff;}
+
+/* DUPLICATE HIGHLIGHT */
+.dup-row td{background:rgba(245,158,11,.04)!important;}
+.dup-badge{cursor:help;}
+
+/* NOT LISTED */
+.not-listed td:first-child{color:#f87171;}
+
+/* SEARCH */
+.search-bar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.search-bar input{flex:1;min-width:200px;}
+
+@media(max-width:900px){
+  .cards{grid-template-columns:repeat(2,1fr);}
+  .panels{grid-template-columns:1fr;}
+  .config-grid{grid-template-columns:1fr;}
+  .header{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="header">
+    <div class="header-left">
+      <div class="logo">Melofone</div>
+      <h1>OLX Монітор</h1>
+      <p class="subtitle">Активні оголошення · Дублі · Невиставлені товари</p>
+    </div>
+    <div class="header-right">
+      <button class="btn btn-secondary" onclick="loadAll()">⟳ Оновити все</button>
+    </div>
+  </header>
+
+  <!-- CONFIG -->
+  <div class="config-panel">
+    <div class="config-title">⚙ Налаштування</div>
+    <div class="config-grid">
+      <div class="field">
+        <label>Cloudflare Worker URL (твій проксі)</label>
+        <input id="proxyUrl" value="https://YOUR_WORKER.YOUR_SUBDOMAIN.workers.dev" placeholder="https://olx-proxy.yourname.workers.dev"/>
+      </div>
+      <div class="field">
+        <label>OLX User ID (з URL профілю)</label>
+        <input id="olxUserId" value="" placeholder="напр. 12345678"/>
+      </div>
+      <div class="field">
+        <button class="btn" onclick="loadAll()" style="width:100%;margin-top:0;">Завантажити</button>
+      </div>
+    </div>
+    <div style="margin-top:12px;font-size:12px;color:var(--muted);">
+      💡 Як отримати User ID: відкрий <a href="https://melofone.olx.ua/uk/home/?tab=ratings" target="_blank" style="color:var(--teal)">melofone.olx.ua</a> → правою кнопкою → Переглянути код → знайди "userId" або "user_id" в HTML
+    </div>
+  </div>
+
+  <!-- STAT CARDS -->
+  <section class="cards">
+    <div class="card"><div class="card-lbl">Активних оголошень</div><div class="card-val c1" id="statTotal">—</div></div>
+    <div class="card"><div class="card-lbl">Унікальних моделей</div><div class="card-val c2" id="statUnique">—</div></div>
+    <div class="card"><div class="card-lbl">Дублікатів</div><div class="card-val c3" id="statDupes">—</div></div>
+    <div class="card"><div class="card-lbl">Не виставлено на OLX</div><div class="card-val c4" id="statMissing">—</div></div>
+  </section>
+
+  <div class="panels">
+    <!-- OLX LISTINGS -->
+    <div class="panel panel-full">
+      <h2>Активні оголошення OLX</h2>
+      <div class="search-bar">
+        <input id="olxSearch" placeholder="🔍 Пошук по назві..." oninput="filterOlx()"/>
+        <select id="olxFilterDupe" onchange="filterOlx()">
+          <option value="">Всі</option>
+          <option value="dup">Тільки дублі</option>
+          <option value="ok">Унікальні</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Назва товару</th><th>Ціна</th><th>Статус</th><th>Дублі</th><th>Посилання</th></tr></thead>
+          <tbody id="olxBody"><tr><td colspan="6" class="loader">Натисни «Завантажити»</td></tr></tbody>
+        </table>
+      </div>
+      <div class="status-bar"><div class="dot-pulse" id="olxDot" style="display:none;"></div><span id="olxStatus">Очікування завантаження...</span></div>
+    </div>
+
+    <!-- NOT LISTED -->
+    <div class="panel panel-full">
+      <h2>⚠ Не виставлено на OLX (є у Дроп, немає на OLX)</h2>
+      <div class="search-bar">
+        <input id="missingSearch" placeholder="🔍 Пошук..." oninput="filterMissing()"/>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Назва товару (зі складу)</th><th>Кількість</th><th>Статус</th></tr></thead>
+          <tbody id="missingBody"><tr><td colspan="4" class="loader">Очікування завантаження...</td></tr></tbody>
+        </table>
+      </div>
+      <div class="status-bar"><span id="missingStatus">—</span></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── CONFIG ─────────────────────────────────────────────
+const SHEET_ID = "1dfB_KascVkm3yQlhJVAf3P-5vnYaPIQWsthSp9ai1SI";
+const SHEET_NAME = "Дроп";
+
+// ── STATE ──────────────────────────────────────────────
+let allOlx = [];      // всі оголошення OLX
+let stockItems = [];  // Дроп аркуш
+let filteredOlx = [];
+let filteredMissing = [];
+
+// ── UTILS ──────────────────────────────────────────────
+function norm(s) {
+  return String(s || "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .replace(/[''`"«»]/g, "")
+    .trim();
+}
+
+function csvUrl(sheet) {
+  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheet)}`;
+}
+
+function parseCSV(text) {
+  const rows = []; let row = [], val = "", q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i], n = text[i+1];
+    if (c==='"'&&q&&n==='"') { val+='"'; i++; }
+    else if (c==='"') { q=!q; }
+    else if (c===','&&!q) { row.push(val); val=""; }
+    else if ((c==='\n'||c==='\r')&&!q) {
+      if (val||row.length) { row.push(val); rows.push(row); row=[]; val=""; }
+      if (c==='\r'&&n==='\n') i++;
+    } else val+=c;
+  }
+  if (val||row.length) { row.push(val); rows.push(row); }
+  return rows;
+}
+
+// ── LOAD GOOGLE SHEET ─────────────────────────────────
+async function loadSheet() {
+  const r = await fetch(csvUrl(SHEET_NAME));
+  const rows = parseCSV(await r.text());
+  // Стовпець A = назва товару
+  return rows.slice(1)
+    .map(r => String(r[0]||"").trim())
+    .filter(Boolean);
+}
+
+// ── LOAD OLX ─────────────────────────────────────────
+async function loadOlx() {
+  const proxy = document.getElementById("proxyUrl").value.trim().replace(/\/$/, "");
+  const userId = document.getElementById("olxUserId").value.trim();
+
+  if (!proxy || proxy.includes("YOUR_WORKER")) {
+    throw new Error("Вкажи URL Cloudflare Worker проксі");
+  }
+
+  let adverts = [];
+  let offset = 0;
+  const limit = 50;
+
+  // OLX публічний API для оголошень користувача
+  while (true) {
+    let url;
+    if (userId) {
+      url = `https://www.olx.ua/api/v1/offers/?user_id=${userId}&offset=${offset}&limit=${limit}&sort_by=created_at:desc`;
+    } else {
+      // Fallback — парсимо RSS/HTML профілю
+      url = `https://www.olx.ua/uk/list/user/melofone/?page=${Math.floor(offset/limit)+1}`;
+    }
+
+    const resp = await fetch(`${proxy}?url=${encodeURIComponent(url)}`);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const text = await resp.text();
+
+    let data;
+    try { data = JSON.parse(text); } catch(e) {
+      // Не JSON — може бути HTML, спробуємо витягти JSON з HTML
+      data = extractJsonFromHtml(text);
+    }
+
+    if (!data) break;
+
+    const items = data.data || data.offers || data.adverts || [];
+    if (!items.length) break;
+
+    adverts = adverts.concat(items);
+    offset += limit;
+    if (items.length < limit) break;
+    if (offset > 500) break; // safety
+  }
+
+  return adverts;
+}
+
+function extractJsonFromHtml(html) {
+  // Пробуємо знайти JSON в __NEXT_DATA__ або window.__data
+  const m = html.match(/__NEXT_DATA__[^>]*>(\{.*?\})<\/script>/s)
+             || html.match(/window\.__data\s*=\s*(\{.*?\});/s);
+  if (m) {
+    try { return JSON.parse(m[1]); } catch(e) {}
+  }
+  return null;
+}
+
+// ── NORMALIZE OLX ITEM ────────────────────────────────
+function normalizeAdvert(item) {
+  return {
+    id:    item.id || item.key || "",
+    title: item.title || item.name || "",
+    price: extractPrice(item),
+    url:   item.url || item.link || `https://www.olx.ua/d/uk/obyavlenie/${item.id}`,
+    status: item.status || "active",
+  };
+}
+
+function extractPrice(item) {
+  if (item.price) {
+    if (typeof item.price === "object") {
+      return item.price.value?.value || item.price.regularPrice?.value || item.price.amount || 0;
+    }
+    return item.price;
+  }
+  return 0;
+}
+
+function formatPrice(p) {
+  if (!p) return "—";
+  return Number(p).toLocaleString("uk-UA") + " ₴";
+}
+
+// ── FIND DUPLICATES ───────────────────────────────────
+function findDuplicates(adverts) {
+  const groups = {};
+  adverts.forEach(a => {
+    const key = norm(a.title);
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(a.id);
+  });
+  return groups;
+}
+
+// ── FIND NOT LISTED ───────────────────────────────────
+function findNotListed(stock, adverts) {
+  const olxTitles = new Set(adverts.map(a => norm(a.title)));
+
+  // Групуємо склад по назві
+  const stockGroups = {};
+  stock.forEach(name => {
+    const key = norm(name);
+    stockGroups[key] = (stockGroups[key] || 0) + 1;
+  });
+
+  return Object.entries(stockGroups)
+    .filter(([key]) => {
+      // Перевіряємо чи є хоч одне оголошення що містить це
+      return !olxTitles.has(key) && ![...olxTitles].some(t => t.includes(key) || key.includes(t.slice(0, 20)));
+    })
+    .map(([key, qty]) => {
+      const original = stock.find(s => norm(s) === key) || key;
+      return { name: original, qty, key };
+    });
+}
+
+// ── RENDER OLX TABLE ─────────────────────────────────
+function renderOlx(items, dupeGroups) {
+  const body = document.getElementById("olxBody");
+  if (!items.length) {
+    body.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted);">Оголошення не знайдені</td></tr>`;
+    return;
+  }
+
+  body.innerHTML = items.map((a, i) => {
+    const key = norm(a.title);
+    const group = dupeGroups[key] || [];
+    const isDup = group.length > 1;
+    const rowClass = isDup ? "dup-row" : "";
+    const dupBadge = isDup
+      ? `<span class="badge badge-warn dup-badge" title="Однакова назва у ${group.length} оголошень">✕${group.length} дублі</span>`
+      : `<span class="badge badge-ok">унікальне</span>`;
+
+    return `<tr class="${rowClass}">
+      <td style="color:var(--muted)">${i+1}</td>
+      <td>${escHtml(a.title)}</td>
+      <td class="price">${formatPrice(a.price)}</td>
+      <td><span class="badge badge-ok">активне</span></td>
+      <td>${dupBadge}</td>
+      <td><a href="${escHtml(a.url)}" target="_blank" style="color:var(--teal);text-decoration:none;font-size:12px;">відкрити →</a></td>
+    </tr>`;
+  }).join("");
+}
+
+// ── RENDER MISSING TABLE ─────────────────────────────
+function renderMissing(items) {
+  const body = document.getElementById("missingBody");
+  if (!items.length) {
+    body.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--muted);">✓ Всі товари зі складу виставлені на OLX</td></tr>`;
+    return;
+  }
+
+  body.innerHTML = items.map((item, i) => `
+    <tr class="not-listed">
+      <td style="color:var(--muted)">${i+1}</td>
+      <td>${escHtml(item.name)}</td>
+      <td><span class="badge badge-blue">${item.qty} шт.</span></td>
+      <td><span class="badge badge-red">не виставлено</span></td>
+    </tr>
+  `).join("");
+}
+
+// ── FILTERS ──────────────────────────────────────────
+function filterOlx() {
+  const q = norm(document.getElementById("olxSearch").value);
+  const dupeFilter = document.getElementById("olxFilterDupe").value;
+  const dupeGroups = findDuplicates(allOlx);
+
+  filteredOlx = allOlx.filter(a => {
+    const matchQ = !q || norm(a.title).includes(q);
+    const key = norm(a.title);
+    const isDup = (dupeGroups[key]||[]).length > 1;
+    const matchDupe = !dupeFilter || (dupeFilter==="dup"&&isDup) || (dupeFilter==="ok"&&!isDup);
+    return matchQ && matchDupe;
+  });
+
+  renderOlx(filteredOlx, dupeGroups);
+}
+
+function filterMissing() {
+  const q = norm(document.getElementById("missingSearch").value);
+  const items = findNotListed(stockItems, allOlx).filter(m => !q || norm(m.name).includes(q));
+  renderMissing(items);
+}
+
+// ── MAIN LOAD ────────────────────────────────────────
+async function loadAll() {
+  document.getElementById("olxDot").style.display = "block";
+  document.getElementById("olxStatus").textContent = "Завантаження...";
+  document.getElementById("olxBody").innerHTML = '<tr><td colspan="6"><div class="loader"></div></td></tr>';
+  document.getElementById("missingBody").innerHTML = '<tr><td colspan="4"><div class="loader"></div></td></tr>';
+
+  try {
+    // Паралельно тягнемо OLX і Google Sheet
+    const [olxRaw, stock] = await Promise.all([
+      loadOlx().catch(e => { console.error("OLX error:", e); return []; }),
+      loadSheet().catch(e => { console.error("Sheet error:", e); return []; }),
+    ]);
+
+    allOlx = olxRaw.map(normalizeAdvert);
+    stockItems = stock;
+
+    const dupeGroups = findDuplicates(allOlx);
+    const dupes = Object.values(dupeGroups).filter(g => g.length > 1).length;
+    const missing = findNotListed(stockItems, allOlx);
+    const uniqueModels = new Set(allOlx.map(a => norm(a.title))).size;
+
+    // Stats
+    document.getElementById("statTotal").textContent = allOlx.length;
+    document.getElementById("statUnique").textContent = uniqueModels;
+    document.getElementById("statDupes").textContent = dupes;
+    document.getElementById("statMissing").textContent = missing.length;
+
+    // Render tables
+    filteredOlx = allOlx;
+    renderOlx(allOlx, dupeGroups);
+    renderMissing(missing);
+
+    const now = new Date().toLocaleString("uk-UA");
+    document.getElementById("olxStatus").textContent = `Оновлено: ${now} · OLX: ${allOlx.length} оголошень · Склад: ${stockItems.length} позицій`;
+    document.getElementById("missingStatus").textContent = `Не виставлено: ${missing.length} із ${new Set(stockItems.map(s=>norm(s))).size} унікальних товарів`;
+
+    if (!allOlx.length) {
+      document.getElementById("olxStatus").textContent = "⚠ OLX оголошення не завантажились. Перевір налаштування проксі та User ID.";
+    }
+
+  } catch(e) {
+    document.getElementById("olxStatus").textContent = "Помилка: " + e.message;
+    console.error(e);
+  }
+
+  document.getElementById("olxDot").style.display = "none";
+}
+
+function escHtml(v) {
+  return String(v||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+// Автоматично тягнемо Google Sheet при старті
+loadSheet().then(s => {
+  stockItems = s;
+  renderMissing([]);
+  document.getElementById("missingStatus").textContent = `Завантажено зі складу: ${s.length} позицій. Натисни «Завантажити» щоб отримати дані OLX.`;
+}).catch(() => {});
+</script>
+</body>
+</html>
