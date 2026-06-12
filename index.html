@@ -436,7 +436,7 @@ async function loadOlx() {
     } else {
       url = `https://www.olx.ua/uk/list/user/melofone/?page=${Math.floor(offset/limit)+1}`;
     }
-    const resp = await fetch(`${proxy}/proxy?url=${encodeURIComponent(url)}`);
+    const resp = await fetch(`${proxy}?url=${encodeURIComponent(url)}`);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const text = await resp.text();
     let data;
