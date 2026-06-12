@@ -265,6 +265,9 @@ tr:hover td{background:rgba(0,230,180,.03);}
         <div class="field">
           <button class="btn btn-tg" onclick="loadTgTab()" style="width:100%">Завантажити</button>
         </div>
+        <div class="field">
+          <button class="btn" onclick="importHistory()" style="width:100%;border-color:#a78bfa;color:#a78bfa;" id="importBtn">⬇ Імпорт історії</button>
+        </div>
       </div>
       <div style="margin-top:12px;font-size:12px;color:var(--muted);">
         💡 Перший запуск: відкрий <b style="color:var(--tg)">[Worker URL]/setup</b> у браузері — це зареєструє Telegram webhook. Зроби це один раз.
@@ -743,6 +746,32 @@ function filterTgMissing() {
       <td>${escHtml(m)}</td>
       <td><span class="badge badge-red">не публікувалось</span></td>
     </tr>`).join("") || `<tr><td colspan="3" style="text-align:center;padding:20px;color:var(--muted);">✓ Всі товари публікувались</td></tr>`;
+}
+
+
+// ── IMPORT HISTORY ────────────────────────────────────────────
+async function importHistory() {
+  const workerUrl = document.getElementById("tgWorkerUrl").value.trim().replace(/\/$/,"");
+  if (!workerUrl || workerUrl.includes("YOUR_WORKER")) {
+    alert("Спочатку вкажи Worker URL");
+    return;
+  }
+  const btn = document.getElementById("importBtn");
+  btn.textContent = "⏳ Імпортую...";
+  btn.disabled = true;
+  try {
+    const r = await fetch(`${workerUrl}/import?pages=5`);
+    const data = await r.json();
+    if (data.ok) {
+      btn.textContent = `✓ Імпортовано: ${data.imported} постів`;
+      setTimeout(() => loadTgTab(), 1000);
+    } else {
+      btn.textContent = "⚠ Помилка імпорту";
+    }
+  } catch(e) {
+    btn.textContent = "⚠ " + e.message;
+  }
+  setTimeout(() => { btn.textContent = "⬇ Імпорт історії"; btn.disabled = false; }, 5000);
 }
 
 // Автозавантаження складу
