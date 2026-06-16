@@ -413,57 +413,57 @@ async function loadSheet() {
   return rows.slice(1).map(r => String(r[0]||"").trim()).filter(Boolean);
 }
 
-// ── КОЛЬОРИ — ігноруємо при порівнянні ──────────────────────
-const COLORS = [
+// ── НОРМАЛІЗАЦІЯ ─────────────────────────────────────────────
+const COLOR_WORDS = new Set([
   "black","white","blue","red","green","yellow","purple","pink",
   "gold","silver","graphite","midnight","starlight","titanium",
   "natural","desert","ultramarine","teal","coral","lavender",
   "alpine","deep","space","gray","grey","rose","sky","storm",
   "obsidian","porcelain","hazel","sage","jade","mint","cream",
   "charcoal","phantom","ivory","mocha","lilac","violet","indigo",
+  "sierrablue","pacificblue","productred","alpine","mauve",
   "чорний","білий","синій","червоний","зелений","жовтий","рожевий",
   "золотий","срібний","сірий","небесний","нічний","титановий",
-];
+]);
 
-// ── НОРМАЛІЗАЦІЯ БЕЗ КОЛЬОРУ ─────────────────────────────────
-function normModel(s) {
-  let v = String(s || "").toLowerCase()
-    .replace(/['''\`"«»()[\]]/g, "")
-    .replace(/esim|e-sim/g, "")
-    .replace(/neverlock|neverlocked/g, "")
-    .replace(/gb ram/g, "gb")
-    .trim();
-
-  // Видаляємо кольори
-  COLORS.forEach(c => {
-    v = v.replace(new RegExp("\\b" + c + "\\b", "g"), "");
-  });
-
-  // Нормалізуємо пробіли
-  v = v.replace(/\s+/g, " ").trim();
-  return v;
+function stripColors(s) {
+  return s.split(" ").filter(w => !COLOR_WORDS.has(w.toLowerCase().replace(/[^a-zа-яіїєё]/gi,""))).join(" ").trim();
 }
 
-// ── ВИТЯГУЄМО ВАРІАНТИ ПАМ'ЯТІ ──────────────────────────────
-// "256/512gb" → ["256gb", "512gb"]
-// "256gb"     → ["256gb"]
+function stripExtras(s) {
+  return String(s || "")
+    .toLowerCase()
+    .replace(/e-sim|esim|sim/gi, "")
+    .replace(/neverlock|neverlocked/gi, "")
+    .replace(/gb ram/gi, "gb")
+    .replace(/['''\`"«»()[\]]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// Витягуємо варіанти пам'яті: "128/256gb" → ["128gb","256gb"]
 function extractMemoryVariants(s) {
-  const m = s.match(/(\d+)\s*\/\s*(\d+)\s*(?:gb|tb)/i);
-  if (m) return [m[1] + "gb", m[2] + "gb"];
-  const m2 = s.match(/(\d+)\s*(?:gb|tb)/i);
-  if (m2) return [m2[0].replace(/\s/g,"").toLowerCase()];
+  const slash = s.match(/(\d+)\s*\/\s*(\d+)\s*(gb|tb)/i);
+  if (slash) return [slash[1]+slash[3].toLowerCase(), slash[2]+slash[3].toLowerCase()];
+  const single = s.match(/(\d+)\s*(gb|tb)/i);
+  if (single) return [single[1]+single[2].toLowerCase()];
   return [];
 }
 
-// ── ВИТЯГУЄМО БАЗОВУ МОДЕЛЬ (без пам'яті і кольору) ──────────
+// Базова модель без пам'яті і кольору
 function extractBaseModel(s) {
-  return normModel(s)
-    .replace(/\d+\s*\/\s*\d+\s*(?:gb|tb)/gi, "")  // 256/512gb
-    .replace(/\d+\s*(?:gb|tb)/gi, "")                 // 256gb
-    .replace(/\s+/g, " ").trim();
+  let v = stripExtras(s);
+  v = stripColors(v);
+  v = v.replace(/\d+\s*\/\s*\d+\s*(?:gb|tb)/gi, "");
+  v = v.replace(/\d+\s*(?:gb|tb)/gi, "");
+  return v.replace(/\s+/g, " ").trim();
 }
 
-// ── MATCH: чи є модель з поста в асортименті ─────────────────
+function normModel(s) {
+  return stripExtras(s);
+}
+
+// ── MATCH ─────────────────────────────────────────────────────
 function matchStock(postModel, stock) {
   const postBase = extractBaseModel(postModel);
   const postMems = extractMemoryVariants(normModel(postModel));
@@ -472,15 +472,10 @@ function matchStock(postModel, stock) {
     const stockBase = extractBaseModel(s);
     const stockMems = extractMemoryVariants(normModel(s));
 
-    // Базові моделі мають збігатись (iPhone 16 Pro Max = iPhone 16 Pro Max)
     if (!postBase || !stockBase) return false;
     const baseMatch = postBase.includes(stockBase) || stockBase.includes(postBase);
     if (!baseMatch) return false;
-
-    // Якщо в одного немає пам'яті — збіг по моделі достатній
     if (!postMems.length || !stockMems.length) return true;
-
-    // Пам'ять: хоча б один варіант збігається
     return postMems.some(pm => stockMems.includes(pm));
   });
 }
