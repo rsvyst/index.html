@@ -739,11 +739,7 @@ function renderTgTop(posts, stock) {
 }
 
 function renderTgMissing(posts, stock) {
-  const postedNorms = new Set(posts.map(p=>norm(p.model)));
-  const missing = [...new Set(stock)].filter(s => {
-    const ns=norm(s);
-    return ![...postedNorms].some(pm=>pm.includes(ns)||ns.includes(pm));
-  });
+  const missing = [...new Set(stock)].filter(s => !posts.some(p => matchStock(p.model, [s])));
   const body=document.getElementById("tgMissingBody");
   if (!missing.length) {
     body.innerHTML=`<tr><td colspan="3" style="text-align:center;padding:32px;color:var(--muted);">✓ Всі товари з асортименту публікувались в Telegram</td></tr>`;
@@ -770,12 +766,10 @@ function filterTg() {
 }
 
 function filterTgMissing() {
-  const q=norm(document.getElementById("tgMissingSearch").value);
-  const postedNorms=new Set(tgPosts.map(p=>norm(p.model)));
-  const missing=[...new Set(stockItems)].filter(s=>{
-    const ns=norm(s);
-    const notPosted=![...postedNorms].some(pm=>pm.includes(ns)||ns.includes(pm));
-    return notPosted&&(!q||ns.includes(q));
+  const q = norm(document.getElementById("tgMissingSearch").value);
+  const missing = [...new Set(stockItems)].filter(s => {
+    const notPosted = !tgPosts.some(p => matchStock(p.model, [s]));
+    return notPosted && (!q || norm(s).includes(q));
   });
   const body=document.getElementById("tgMissingBody");
   body.innerHTML=missing.map((m,i)=>`
