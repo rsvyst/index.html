@@ -441,11 +441,13 @@ function stripExtras(s) {
     .trim();
 }
 
-// Витягуємо варіанти пам'яті: "128/256gb" → ["128gb","256gb"]
+// Витягуємо варіанти пам'яті: "128/256gb" або "128 GB" → ["128gb","256gb"]
 function extractMemoryVariants(s) {
-  const slash = s.match(/(\d+)\s*\/\s*(\d+)\s*(gb|tb)/i);
+  // Прибираємо пробіли між числом і GB: "128 GB" → "128gb"
+  const norm = s.replace(/(\d+)\s+(gb|tb)/gi, "$1$2");
+  const slash = norm.match(/(\d+)\s*\/\s*(\d+)\s*(gb|tb)/i);
   if (slash) return [slash[1]+slash[3].toLowerCase(), slash[2]+slash[3].toLowerCase()];
-  const single = s.match(/(\d+)\s*(gb|tb)/i);
+  const single = norm.match(/(\d+)\s*(gb|tb)/i);
   if (single) return [single[1]+single[2].toLowerCase()];
   return [];
 }
@@ -453,6 +455,8 @@ function extractMemoryVariants(s) {
 // Базова модель без пам'яті і кольору
 function extractBaseModel(s) {
   let v = stripExtras(s);
+  // Прибираємо пробіли між числом і GB перед видаленням
+  v = v.replace(/(\d+)\s+(gb|tb)/gi, "$1$2");
   v = stripColors(v);
   v = v.replace(/\d+\s*\/\s*\d+\s*(?:gb|tb)/gi, "");
   v = v.replace(/\d+\s*(?:gb|tb)/gi, "");
@@ -460,23 +464,19 @@ function extractBaseModel(s) {
 }
 
 function normModel(s) {
-  return stripExtras(s);
+  return stripExtras(s).replace(/(\d+)\s+(gb|tb)/gi, "$1$2");
 }
 
 // ── MATCH ─────────────────────────────────────────────────────
+// Для Telegram порівнюємо ТІЛЬКИ базову модель (без пам'яті і кольору)
 function matchStock(postModel, stock) {
   const postBase = extractBaseModel(postModel);
-  const postMems = extractMemoryVariants(normModel(postModel));
+  if (!postBase || postBase.length < 5) return false;
 
   return stock.some(s => {
     const stockBase = extractBaseModel(s);
-    const stockMems = extractMemoryVariants(normModel(s));
-
-    if (!postBase || !stockBase) return false;
-    const baseMatch = postBase.includes(stockBase) || stockBase.includes(postBase);
-    if (!baseMatch) return false;
-    if (!postMems.length || !stockMems.length) return true;
-    return postMems.some(pm => stockMems.includes(pm));
+    if (!stockBase || stockBase.length < 5) return false;
+    return postBase.includes(stockBase) || stockBase.includes(postBase);
   });
 }
 
@@ -815,7 +815,7 @@ async function importHistory() {
   btn.textContent = "⏳ Імпортую...";
   btn.disabled = true;
   try {
-    const r = await fetch(`${workerUrl}/import?pages=5`);
+    const r = await fetch(`${workerUrl}/import?pages=10`);
     const data = await r.json();
     if (data.ok) {
       btn.textContent = `✓ Імпортовано: ${data.imported} постів`;
