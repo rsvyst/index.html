@@ -414,58 +414,41 @@ async function loadSheet() {
 }
 
 // ── НОРМАЛІЗАЦІЯ ─────────────────────────────────────────────
-const COLOR_WORDS = new Set([
-  "black","white","blue","red","green","yellow","purple","pink",
-  "gold","silver","graphite","midnight","starlight","titanium",
-  "natural","desert","ultramarine","teal","coral","lavender",
-  "alpine","deep","space","gray","grey","rose","sky","storm",
-  "obsidian","porcelain","hazel","sage","jade","mint","cream",
-  "charcoal","phantom","ivory","mocha","lilac","violet","indigo",
-  "sierrablue","pacificblue","productred","alpine","mauve",
-  "чорний","білий","синій","червоний","зелений","жовтий","рожевий",
-  "золотий","срібний","сірий","небесний","нічний","титановий",
-]);
+// Залишає ТІЛЬКИ бренд + назву моделі, все інше прибирає
+function extractBaseModel(s) {
+  let v = String(s || "").toLowerCase();
 
-function stripColors(s) {
-  return s.split(" ").filter(w => !COLOR_WORDS.has(w.toLowerCase().replace(/[^a-zа-яіїєё]/gi,""))).join(" ").trim();
-}
-
-function stripExtras(s) {
-  return String(s || "")
-    .toLowerCase()
-    .replace(/e-sim|esim|sim/gi, "")
+  // Прибираємо все що не потрібно
+  v = v
+    .replace(/esim\+esim|esim\+sim|sim\+esim|e-sim\+e-sim/gi, "")
+    .replace(/esim|e-sim|sim/gi, "")
     .replace(/neverlock|neverlocked/gi, "")
-    .replace(/gb ram/gi, "gb")
-    .replace(/['''\`"«»()[\]]/g, "")
+    .replace(/\d+\s*\/\s*\d+(?:\s*\/\s*\d+)*\s*(?:gb|tb)/gi, "") // 128/256/512gb
+    .replace(/\d+\s*(?:gb|tb)/gi, "")                              // 128gb або 128 gb
+    .replace(/\d+/g, "")                                           // решта цифр
+    .replace(/['''\`"«»()[\]+]/g, "")
     .replace(/\s+/g, " ")
     .trim();
+
+  // Прибираємо кольори (кожне слово окремо)
+  const COLORS = new Set([
+    "black","white","blue","red","green","yellow","purple","pink",
+    "gold","silver","graphite","midnight","starlight","titanium",
+    "natural","desert","ultramarine","teal","coral","lavender",
+    "alpine","deep","space","gray","grey","rose","sky","storm",
+    "obsidian","porcelain","hazel","sage","jade","mint","cream",
+    "charcoal","phantom","ivory","mocha","lilac","violet","indigo",
+    "sierra","pacific","product","mauve","cotton","glacier",
+    "чорний","білий","синій","червоний","зелений","жовтий","рожевий",
+    "золотий","срібний","сірий","небесний","нічний","титановий",
+  ]);
+
+  v = v.split(" ").filter(w => w && !COLORS.has(w)).join(" ").trim();
+  return v;
 }
 
-// Витягуємо варіанти пам'яті: "128/256gb" або "128 GB" → ["128gb","256gb"]
-function extractMemoryVariants(s) {
-  // Прибираємо пробіли між числом і GB: "128 GB" → "128gb"
-  const norm = s.replace(/(\d+)\s+(gb|tb)/gi, "$1$2");
-  const slash = norm.match(/(\d+)\s*\/\s*(\d+)\s*(gb|tb)/i);
-  if (slash) return [slash[1]+slash[3].toLowerCase(), slash[2]+slash[3].toLowerCase()];
-  const single = norm.match(/(\d+)\s*(gb|tb)/i);
-  if (single) return [single[1]+single[2].toLowerCase()];
-  return [];
-}
-
-// Базова модель без пам'яті і кольору
-function extractBaseModel(s) {
-  let v = stripExtras(s);
-  // Прибираємо пробіли між числом і GB перед видаленням
-  v = v.replace(/(\d+)\s+(gb|tb)/gi, "$1$2");
-  v = stripColors(v);
-  v = v.replace(/\d+\s*\/\s*\d+\s*(?:gb|tb)/gi, "");
-  v = v.replace(/\d+\s*(?:gb|tb)/gi, "");
-  return v.replace(/\s+/g, " ").trim();
-}
-
-function normModel(s) {
-  return stripExtras(s).replace(/(\d+)\s+(gb|tb)/gi, "$1$2");
-}
+function normModel(s) { return extractBaseModel(s); }
+function extractMemoryVariants(s) { return []; } // не використовується
 
 // ── MATCH ─────────────────────────────────────────────────────
 // Для Telegram порівнюємо ТІЛЬКИ базову модель (без пам'яті і кольору)
