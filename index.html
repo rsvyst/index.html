@@ -181,11 +181,11 @@ tr:hover td{background:rgba(0,230,180,.03);}
       <div class="config-grid">
         <div class="field">
           <label>Cloudflare Worker URL</label>
-          <input id="proxyUrl" value="https://YOUR_WORKER.YOUR_SUBDOMAIN.workers.dev" placeholder="https://olx-proxy.yourname.workers.dev"/>
+          <input id="proxyUrl" value="https://curly-band-4af1.r-svyst.workers.dev" placeholder="https://olx-proxy.yourname.workers.dev"/>
         </div>
         <div class="field">
           <label>OLX User ID</label>
-          <input id="olxUserId" value="" placeholder="напр. 12345678"/>
+          <input id="olxUserId" value="61810362" placeholder="напр. 12345678"/>
         </div>
         <div class="field">
           <button class="btn" onclick="loadOlxTab()" style="width:100%">Завантажити</button>
@@ -247,7 +247,7 @@ tr:hover td{background:rgba(0,230,180,.03);}
       <div class="config-grid-tg">
         <div class="field">
           <label>Cloudflare Worker URL</label>
-          <input id="tgWorkerUrl" placeholder="https://YOUR_WORKER.workers.dev"/>
+          <input id="tgWorkerUrl" value="https://curly-band-4af1.r-svyst.workers.dev" placeholder="https://YOUR_WORKER.workers.dev"/>
         </div>
         <div class="field">
           <label>Назва Telegram канала</label>
@@ -664,14 +664,13 @@ async function loadTgTab() {
 function renderTgStats(posts, stock, days) {
   const uniqModels = new Set(posts.map(p=>norm(p.model))).size;
   const matched    = posts.filter(p=>matchStock(p.model, stock)).length;
-  // Є в асортименті але не постили
-  const postedNorms = new Set(posts.map(p=>norm(p.model)));
-  const notPosted   = [...new Set(stock.map(s=>norm(s)))].filter(s=>![...postedNorms].some(pm=>pm.includes(s)||s.includes(pm))).length;
+  // Використовуємо ту саму логіку що і в таблиці renderTgMissing
+  const missing = [...new Set(stock)].filter(s => !posts.some(p => matchStock(p.model, [s])));
 
   document.getElementById("tgStatTotal").textContent  = posts.length;
   document.getElementById("tgStatUniq").textContent   = uniqModels;
   document.getElementById("tgStatMatch").textContent  = matched;
-  document.getElementById("tgStatMissing").textContent= notPosted;
+  document.getElementById("tgStatMissing").textContent= missing.length;
 }
 
 function renderTgChart(posts, days) {
